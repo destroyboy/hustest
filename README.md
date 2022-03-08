@@ -9,3 +9,5 @@ Technical details: Use the following
 * Picasso/Glide
 * Architecture Components (LiveData, Flow etc)
 * Coroutines
+
+As I have not used Kotlin very much before and I have never used Retrofit/Picasso/Architecture Components before, then initially I'm going to use Java, then figure out how to replace at least one of the Java callbacks to a coroutine.
