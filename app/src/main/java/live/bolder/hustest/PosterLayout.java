@@ -3,6 +3,7 @@ package live.bolder.hustest;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Choreographer;
 import android.view.animation.Animation;
@@ -12,13 +13,67 @@ import android.widget.RelativeLayout;
 
 /*** hardcoded aspect ratio view for posters, to hopefully make recycler view smoother */
 
-public class PosterLayout extends RelativeLayout {
+public class PosterLayout extends RelativeLayout implements Choreographer.FrameCallback {
 
     ImageView posterImage;
-    Animation shrink_poster;
-    Animation expand_poster;
     RelativeLayout info_area_1;
     RelativeLayout info_area_2;
+
+    long startAnimation_time;
+    long endAnimation_time;
+
+    float getAnimationFraction() {
+        long currentTime = System.nanoTime();
+        return ( currentTime - startAnimation_time ) / ( float )( endAnimation_time - startAnimation_time );
+    }
+
+    /// return a number between a and b depending on fraction t
+    float animateBetween( float a, float b, float t ) {
+        if ( t < 0.0f )
+            t = 0.0f;
+        else if ( t > 1.0f )
+            t = 1.0f;
+        return b * t + a * ( 1.0f - t );
+    }
+
+    @Override
+    public void doFrame(long frameTimeNanos) {
+        switch( state ) {
+            case AnimatingToDetails: {
+                float animationFraction = getAnimationFraction();
+                float posterScale = animateBetween( 1.0f, 0.33f, animationFraction );
+                float aScale = animateBetween( 0.0f, 1.0f, animationFraction );
+                posterImage.setScaleX( posterScale );
+                posterImage.setScaleY( posterScale );
+                info_area_1.setScaleX( aScale );
+                info_area_1.setScaleY( aScale );
+                info_area_2.setScaleX( aScale );
+                info_area_2.setScaleY( aScale );
+                if ( animationFraction >= 1.0f )
+                    state = State.Details;
+                else
+                    Choreographer.getInstance().postFrameCallback( this );
+                break;
+            }
+
+            case AnimatingToPoster: {
+                float animationFraction = getAnimationFraction();
+                float posterScale = animateBetween( 0.33f, 1.0f, animationFraction );
+                float aScale = animateBetween( 1.0f, 0.0f, animationFraction );
+                posterImage.setScaleX( posterScale );
+                posterImage.setScaleY( posterScale );
+                info_area_1.setScaleX( aScale );
+                info_area_1.setScaleY( aScale );
+                info_area_2.setScaleX( aScale );
+                info_area_2.setScaleY( aScale );
+                if ( animationFraction >= 1.0f )
+                    state = State.Poster;
+                else
+                    Choreographer.getInstance().postFrameCallback( this );
+                break;
+            }
+        }
+    }
 
     enum State {
         Poster,
@@ -31,55 +86,6 @@ public class PosterLayout extends RelativeLayout {
 
     public PosterLayout(Context c, AttributeSet a) {
         super( c, a );
-
-        shrink_poster = new ScaleAnimation(
-                1f, 0.33f, // Start and end values for the X axis scaling
-                1.0f, 0.33f, // Start and end values for the Y axis scaling
-                Animation.RELATIVE_TO_SELF, 0f, // Pivot point of X scaling
-                Animation.RELATIVE_TO_SELF, 0f); // Pivot point of Y scaling
-        shrink_poster.setFillAfter(true); // Needed to keep the result of the animation
-        shrink_poster.setDuration( 500 );
-        shrink_poster.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                state = State.AnimatingToDetails;
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                state = State.Details;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-        expand_poster = new ScaleAnimation(
-                0.33f, 1.0f, // Start and end values for the X axis scaling
-                0.33f, 1.0f, // Start and end values for the Y axis scaling
-                Animation.RELATIVE_TO_SELF, 0f, // Pivot point of X scaling
-                Animation.RELATIVE_TO_SELF, 0f); // Pivot point of Y scaling
-        expand_poster.setFillAfter(true); // Needed to keep the result of the animation
-        expand_poster.setDuration( 500 );
-        expand_poster.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                state = State.AnimatingToPoster;
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                state = State.Poster;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
         state = State.Poster;
     }
 
@@ -94,50 +100,41 @@ public class PosterLayout extends RelativeLayout {
     void animateToDetails() {
         switch ( state ) {
             case Poster:
-                posterImage.startAnimation( shrink_poster );
+                //posterImage.startAnimation( shrink_poster );
                 break;
             case AnimatingToDetails:
             case Details:
                 break;
             case AnimatingToPoster:
-                expand_poster.cancel();
+                //expand_poster.cancel();
                 state = State.Details;
                 break;
         }
     }
 
     void resetView() {
-        shrink_poster.cancel();
-        expand_poster.cancel();
         state = State.Poster;
         posterImage.setScaleX( 1.0f );
         posterImage.setScaleY( 1.0f );
-    }
-
-    void animateToPoster() {
-        switch ( state ) {
-            case Details:
-                posterImage.startAnimation( expand_poster );
-                break;
-            case AnimatingToPoster:
-            case Poster:
-                break;
-            case AnimatingToDetails:
-                shrink_poster.cancel();
-                state = State.Poster;
-                break;
-        }
+        info_area_1.setScaleX( 0.0f );
+        info_area_1.setScaleY( 0.0f );
+        info_area_2.setScaleX( 0.0f );
+        info_area_2.setScaleY( 0.0f );
     }
 
     void toggleView() {
-        switch ( state ) {
-            case Details:
-            //case AnimatingToDetails:
-                animateToPoster();
-                break;
+        switch( state ) {
             case Poster:
-            //case AnimatingToPoster:
-                animateToDetails();
+                startAnimation_time = System.nanoTime();
+                endAnimation_time = startAnimation_time + 1000*1000*250;
+                state = State.AnimatingToDetails;
+                Choreographer.getInstance().postFrameCallback( this );
+                break;
+            case Details:
+                startAnimation_time = System.nanoTime();
+                endAnimation_time = startAnimation_time + 1000*1000*250;
+                state = State.AnimatingToPoster;
+                Choreographer.getInstance().postFrameCallback( this );
                 break;
         }
     }
@@ -174,5 +171,15 @@ public class PosterLayout extends RelativeLayout {
                 ( int )( w * 0.51f + dipToPx( 24 ) ),
                 ( int ) w - ( int )dipToPx( 20 ),
                 ( int )( h - dipToPx( 24 ) ) );
+
+        posterImage.setPivotX( 0 );
+        posterImage.setPivotY( 0 );
+
+        info_area_1.setPivotX( info_area_1.getWidth() );
+        info_area_1.setPivotY( 0 );
+
+        info_area_2.setPivotX( info_area_2.getWidth() );
+        info_area_2.setPivotY( info_area_2.getHeight() );
     }
+
 }
