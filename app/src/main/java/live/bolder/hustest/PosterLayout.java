@@ -16,7 +16,7 @@ public class PosterLayout extends RelativeLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int mode = MeasureSpec.getMode( widthMeasureSpec );
         int height = ( 3 * MeasureSpec.getSize( widthMeasureSpec ) ) / 2;
-        heightMeasureSpec = MeasureSpec.makeMeasureSpec( mode, height );
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec( height, mode );
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }
