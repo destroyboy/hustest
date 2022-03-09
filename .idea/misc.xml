@@ -5,6 +5,7 @@
       <map>
         <entry key="../../../layout/custom_preview.xml" value="0.12314814814814815" />
         <entry key="app/src/main/res/drawable/rounded_corners.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/rounded_corners_black.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.17844202898550723" />
         <entry key="app/src/main/res/layout/film_row.xml" value="0.20833333333333334" />
       </map>

@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:clipToPadding="false">
+    <RelativeLayout
+        android:id="@+id/info_area_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:elevation="12dp"
+        android:background="@drawable/rounded_corners_black">
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/info_area_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:elevation="12dp"
+        android:background="@drawable/rounded_corners_black">
+    </RelativeLayout>
     <ImageView
             android:id="@+id/poster_image"
             android:layout_width="match_parent"
@@ -15,6 +29,6 @@
             android:src="@drawable/imagemissing"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:background="@drawable/rounded_corners"
+            android:background="@drawable/rounded_corners_white"
             android:elevation="12dp"/>
 </live.bolder.hustest.PosterLayout>

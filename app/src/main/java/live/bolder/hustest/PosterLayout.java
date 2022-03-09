@@ -1,7 +1,9 @@
 package live.bolder.hustest;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Choreographer;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -15,6 +17,8 @@ public class PosterLayout extends RelativeLayout {
     ImageView posterImage;
     Animation shrink_poster;
     Animation expand_poster;
+    RelativeLayout info_area_1;
+    RelativeLayout info_area_2;
 
     enum State {
         Poster,
@@ -142,5 +146,33 @@ public class PosterLayout extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         posterImage = findViewById( R.id.poster_image );
+        info_area_1 = findViewById( R.id.info_area_1 );
+        info_area_2 = findViewById( R.id.info_area_2 );
+    }
+
+    float dipToPx( float dip ) {
+        Resources r = getResources();
+        return TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP,
+                dip,
+                r.getDisplayMetrics()
+        );
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        float w = getWidth();
+        float h = getHeight();
+        info_area_1.layout(
+                ( int ) ( w * 0.33f + dipToPx( 18 ) ),
+                ( int )dipToPx( 24 ),
+                ( int ) w - ( int )dipToPx( 20 ),
+                ( int )( w * 0.515f ) );
+
+        info_area_2.layout(
+                ( int )dipToPx( 18 ),
+                ( int )( w * 0.51f + dipToPx( 24 ) ),
+                ( int ) w - ( int )dipToPx( 20 ),
+                ( int )( h - dipToPx( 24 ) ) );
     }
 }
