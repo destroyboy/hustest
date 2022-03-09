@@ -3,11 +3,9 @@ package live.bolder.hustest;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Choreographer;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -16,8 +14,8 @@ import android.widget.RelativeLayout;
 public class PosterLayout extends RelativeLayout implements Choreographer.FrameCallback {
 
     ImageView posterImage;
-    RelativeLayout info_area_1;
-    RelativeLayout info_area_2;
+    View info_area_1;
+    View info_area_2;
 
     long startAnimation_time;
     long endAnimation_time;
@@ -155,22 +153,39 @@ public class PosterLayout extends RelativeLayout implements Choreographer.FrameC
         );
     }
 
+    boolean childSizeSet = false;
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         float w = getWidth();
         float h = getHeight();
-        info_area_1.layout(
-                ( int ) ( w * 0.33f + dipToPx( 18 ) ),
-                ( int )dipToPx( 24 ),
-                ( int ) w - ( int )dipToPx( 20 ),
-                ( int )( w * 0.515f ) );
 
-        info_area_2.layout(
-                ( int )dipToPx( 18 ),
-                ( int )( w * 0.51f + dipToPx( 24 ) ),
-                ( int ) w - ( int )dipToPx( 20 ),
-                ( int )( h - dipToPx( 24 ) ) );
+        float a1_l = ( w * 0.33f + dipToPx( 18 ) );
+        float a1_t = dipToPx( 24 );
+        float a1_r = w - dipToPx( 20 );
+        float a1_b = w * 0.515f;
+
+        float a2_l = dipToPx( 18 );
+        float a2_t = w * 0.51f + dipToPx( 24 );
+        float a2_r = w - dipToPx( 20 );
+        float a2_b = h - dipToPx( 24 );
+
+        if ( !childSizeSet ) {
+            android.view.ViewGroup.LayoutParams a1_params = info_area_1.getLayoutParams();
+            a1_params.width = ( int )( a1_r - a1_l );
+            a1_params.height = ( int ) ( a1_b - a1_t );
+            info_area_1.setLayoutParams(a1_params);
+
+            android.view.ViewGroup.LayoutParams a2_params = info_area_2.getLayoutParams();
+            a2_params.width = ( int )( a2_r - a2_l );
+            a2_params.height = ( int ) ( a2_b - a2_t );
+            info_area_2.setLayoutParams(a2_params);
+            childSizeSet = true;
+        }
+
+        info_area_1.layout( ( int )a1_l, ( int )a1_t, ( int )a1_r, ( int )a1_b );
+        info_area_2.layout( ( int )a2_l, ( int )a2_t, ( int )a2_r, ( int )a2_b );
 
         posterImage.setPivotX( 0 );
         posterImage.setPivotY( 0 );

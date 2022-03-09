@@ -6,20 +6,28 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:clipToPadding="false">
-    <RelativeLayout
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/info_area_1"
+        android:background="@drawable/rounded_corners_black"
+        android:elevation="16dp"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:elevation="12dp"
-        android:background="@drawable/rounded_corners_black">
-    </RelativeLayout>
-    <RelativeLayout
+        android:textColor="@color/white"
+        android:fontFamily="monospace"
+        android:text="Field name:"
+        android:textSize="32dp"
+        />
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/info_area_2"
+        android:background="@drawable/rounded_corners_black"
+        android:elevation="16dp"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:elevation="12dp"
-        android:background="@drawable/rounded_corners_black">
-    </RelativeLayout>
+        android:textColor="@color/white"
+        android:fontFamily="monospace"
+        android:text="Value:"
+        android:textSize="32dp"
+        />
     <ImageView
             android:id="@+id/poster_image"
             android:layout_width="match_parent"

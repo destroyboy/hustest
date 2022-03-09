@@ -6,11 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +91,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     public void onBindViewHolder( ViewHolder holder, int position ) {
         holder.row = mData.get( position );
         holder.posterLayout.resetView( holder.row.state );
+        ///holder.text1.setText( "fuck you, you bastard! what kind of crazy thing is this" );
         Picasso.get().load( holder.row.getPosterPath()).resize( 400, 600 ).placeholder( R.drawable.imagemissing ).into( holder.posterView );
+        if ( holder.row.details != null ) {
+            String jObj = new Gson().toJson( holder.row.details );
+            Log.d( "TMDB", jObj );
+        }
+
     }
 
     @Override
@@ -105,11 +115,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         ImageView posterView;
         PosterLayout posterLayout;
         MovieRow row;
+        TextView text1;
 
         ViewHolder(View itemView) {
             super(itemView);
             posterView = itemView.findViewById( R.id.poster_image );
             posterLayout = itemView.findViewById( R.id.poster_layout );
+            text1 = itemView.findViewById( R.id.info_area_1 );
             itemView.setOnClickListener(this);
         }
 
