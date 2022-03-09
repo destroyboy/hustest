@@ -97,46 +97,46 @@ public class PosterLayout extends RelativeLayout implements Choreographer.FrameC
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    void animateToDetails() {
-        switch ( state ) {
+    void resetView( State state ) {
+        switch( state ) {
             case Poster:
-                //posterImage.startAnimation( shrink_poster );
+                posterImage.setScaleX( 1.0f );
+                posterImage.setScaleY( 1.0f );
+                info_area_1.setScaleX( 0.0f );
+                info_area_1.setScaleY( 0.0f );
+                info_area_2.setScaleX( 0.0f );
+                info_area_2.setScaleY( 0.0f );
+                this.state = State.Poster;
                 break;
-            case AnimatingToDetails:
             case Details:
-                break;
-            case AnimatingToPoster:
-                //expand_poster.cancel();
-                state = State.Details;
+                posterImage.setScaleX( 0.33f );
+                posterImage.setScaleY( 0.33f );
+                info_area_1.setScaleX( 1.0f );
+                info_area_1.setScaleY( 1.0f );
+                info_area_2.setScaleX( 1.0f );
+                info_area_2.setScaleY( 1.0f );
+                this.state = State.Details;
                 break;
         }
     }
 
-    void resetView() {
-        state = State.Poster;
-        posterImage.setScaleX( 1.0f );
-        posterImage.setScaleY( 1.0f );
-        info_area_1.setScaleX( 0.0f );
-        info_area_1.setScaleY( 0.0f );
-        info_area_2.setScaleX( 0.0f );
-        info_area_2.setScaleY( 0.0f );
-    }
-
-    void toggleView() {
+    // return the state that we shall transition to....
+    State toggleView() {
         switch( state ) {
             case Poster:
                 startAnimation_time = System.nanoTime();
                 endAnimation_time = startAnimation_time + 1000*1000*250;
                 state = State.AnimatingToDetails;
                 Choreographer.getInstance().postFrameCallback( this );
-                break;
+                return State.Details;
             case Details:
                 startAnimation_time = System.nanoTime();
                 endAnimation_time = startAnimation_time + 1000*1000*250;
                 state = State.AnimatingToPoster;
                 Choreographer.getInstance().postFrameCallback( this );
-                break;
+                return State.Poster;
         }
+        return state;
     }
 
     @Override

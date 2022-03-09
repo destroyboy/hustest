@@ -15,7 +15,8 @@ class MainActivity : AppCompatActivity(), DiskCacheLoaded, LifecycleOwner {
     private var diskCache: DiskCache? = null
     private var movieCache: MovieCache? = null
     private var moviesAdapter: MoviesAdapter? = null
-    private var movieViewModel: MovieViewModel? = null
+
+    var movieViewModel: MovieViewModel? = null
 
     override fun onDiskCacheCreated(diskCache: DiskCache) {
         movieCache = MovieCache(diskCache, movieViewModel)
@@ -27,11 +28,10 @@ class MainActivity : AppCompatActivity(), DiskCacheLoaded, LifecycleOwner {
         movieViewModel = ViewModelProvider(this)[ MovieViewModel::class.java ]
         val movieObserver = Observer { movie: MovieViewModel.Movie ->
             moviesAdapter!!.updateMovie(
-                MovieItem(
-                    movie.index,
-                    movie.info,
-                    movie.details
-                )
+                movie.info,
+                movie.details,
+                movie.index,
+                movie.state
             )
         }
         movieViewModel!!.addObserver(this, movieObserver)

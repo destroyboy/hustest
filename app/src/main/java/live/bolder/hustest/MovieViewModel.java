@@ -27,11 +27,13 @@ public class MovieViewModel extends ViewModel implements MovieCache.GetMovieUpda
         MovieResults.Result info;
         MovieDetails details;
         int index;
+        PosterLayout.State state;
 
-        Movie( MovieResults.Result info, MovieDetails details, int index ) {
+        Movie(MovieResults.Result info, MovieDetails details, int index, PosterLayout.State state ) {
             this.info = info;
             this.details = details;
             this.index = index;
+            this.state = state;
         }
 
         @Override
@@ -50,8 +52,11 @@ public class MovieViewModel extends ViewModel implements MovieCache.GetMovieUpda
 
     @Override
     public void onMovieUpdated( MovieCache.MovieItem item ) {
-        Movie new_version = new Movie( item.info, item.details, item.index );
         MutableLiveData<Movie> live_version = movies.get( item.index );
+        PosterLayout.State state = live_version.getValue() == null ? PosterLayout.State.Poster : live_version.getValue().state;
+        Movie new_version = new Movie( item.info, item.details, item.index, state );
+
+        // equals doesn't care about Poster/Detail state so we don't trigger the observe...
         if ( !Objects.equals(live_version.getValue(), new_version ) )
             live_version.setValue( new_version );
     }

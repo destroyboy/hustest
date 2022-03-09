@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
@@ -20,8 +21,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         MovieResults.Result info;
         MovieDetails details;
 
-        MovieRow( MovieResults.Result info ) {
+        /// whether we display poster or details
+        PosterLayout.State state = PosterLayout.State.Poster;
+
+        MovieRow( MovieResults.Result info, PosterLayout.State state ) {
             this.info = info;
+            this.state = state;
         }
         int getId() {
             return info.id;
@@ -50,16 +55,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         };
     }
 
-    void updateMovie( MovieCache.MovieItem item ) {
+    void updateMovie( MovieResults.Result info, MovieDetails details, int index, PosterLayout.State state ) {
         if ( mData.size() < 10 ) {
-            mData.add( new MovieRow( item.info ) );
-            notifyItemInserted( item.index );
+            mData.add( new MovieRow( info, state ) );
+            notifyItemInserted( index );
         }
         else {
-            MovieRow row = mData.get( item.index );
-            row.info = item.info;
-            row.details = item.details;
-            notifyItemChanged( item.index );
+            MovieRow row = mData.get( index );
+            row.info = info;
+            row.details = details;
+            row.state = state;
+            notifyItemChanged( index );
         }
     }
 
@@ -80,7 +86,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     @Override
     public void onBindViewHolder( ViewHolder holder, int position ) {
         holder.row = mData.get( position );
-        holder.posterLayout.resetView();
+        holder.posterLayout.resetView( holder.row.state );
         Picasso.get().load( holder.row.getPosterPath()).resize( 400, 600 ).placeholder( R.drawable.imagemissing ).into( holder.posterView );
     }
 
@@ -111,7 +117,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         public void onClick(View view) {
             smoothScroller.setTargetPosition( getAdapterPosition() );
             layoutManager.startSmoothScroll( smoothScroller );
-            posterLayout.toggleView();
+            row.state = posterLayout.toggleView();
+            try {
+                ( ( MainActivity )view.getContext( ) ).getMovieViewModel().movies.get( getAdapterPosition() ).getValue().state = row.state;
+            }
+            catch ( NullPointerException ignore ) {
+
+            }
             ///if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
         }
     }
