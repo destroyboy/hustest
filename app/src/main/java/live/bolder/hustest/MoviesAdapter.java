@@ -61,7 +61,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     @Override
     public void onBindViewHolder( ViewHolder holder, int position ) {
         MovieRow row = mData.get( position );
-        Picasso.get().load( row.getPosterPath()).into(holder.posterView );
+        holder.posterView.setImageDrawable( null );
+        Picasso.get().load( row.getPosterPath()).resize( 400, 600 ).into(holder.posterView );
     }
 
     @Override

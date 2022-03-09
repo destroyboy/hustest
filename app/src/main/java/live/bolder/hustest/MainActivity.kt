@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity(), DiskCacheLoaded, LifecycleOwner {
         movieViewModel!!.addObserver(this, movieObserver)
         diskCache = DiskCache(this, this)
         val moviesList: RecyclerView = findViewById(R.id.films)
+        //moviesList.setHasFixedSize( true )
         moviesList.layoutManager = LinearLayoutManager(this)
         moviesAdapter = MoviesAdapter(this)
         moviesList.adapter = moviesAdapter
