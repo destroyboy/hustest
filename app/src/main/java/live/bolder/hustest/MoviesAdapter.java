@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import live.bolder.hustest.kotlin.MainViewModel;
+
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
     static class MovieRow {
@@ -115,6 +117,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             row.generateDetailsList();
             notifyItemChanged( index );
         }
+    }
+
+    void updateFromKotlin( ArrayList<MainViewModel.Movie> movies ) {
+        Log.d( "TMDB", "updating from kotlin" );
     }
 
     @Override

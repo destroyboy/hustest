@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import live.bolder.hustest.kotlin.MovieRepository
 import live.bolder.hustest.kotlin.MainViewModel
+import java.util.ArrayList
 
 class MainActivity : AppCompatActivity(), DiskCacheLoaded, LifecycleOwner {
 
@@ -44,7 +45,11 @@ class MainActivity : AppCompatActivity(), DiskCacheLoaded, LifecycleOwner {
         moviesList.adapter = moviesAdapter
 
         /// new kotlin code, to demonstrate use of coroutines
+        val kMovieObserver = Observer { movies: ArrayList<MainViewModel.Movie> ->
+            moviesAdapter.updateFromKotlin( movies )
+        }
         val mainViewModel = MainViewModel( MovieRepository() )
+        mainViewModel.addObserver( this, kMovieObserver )
         mainViewModel.refreshPopularMovies()
     }
 }

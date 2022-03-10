@@ -2,13 +2,11 @@ package live.bolder.hustest.kotlin
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
-import live.bolder.hustest.MovieDetails
-import live.bolder.hustest.MovieResults
-import live.bolder.hustest.PosterLayout
+import live.bolder.hustest.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainViewModel constructor(private val mainRepository: MovieRepository) : ViewModel() {
 
@@ -40,7 +38,7 @@ class MainViewModel constructor(private val mainRepository: MovieRepository) : V
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val moviesNew: ArrayList<Movie> = ArrayList()
             val movieResults = mainRepository.getMovies().body()!!.results
-            for ( i in 0..movieResults.size ) {
+            for ( i in 0 until movieResults.size ) {
                 val m = Movie( movieResults[ i ], null, i, PosterLayout.State.Poster )
                 moviesNew.add( m )
                 val details = mainRepository.getMovieDetails( m.info.id )
@@ -51,5 +49,9 @@ class MainViewModel constructor(private val mainRepository: MovieRepository) : V
             //    movies.value = moviesNew
             //}
         }
+    }
+
+    fun addObserver( activity: MainActivity, observer: Observer<ArrayList<Movie>> ) {
+        movies.observe( activity, observer )
     }
 }
