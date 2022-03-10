@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 class MainActivity : AppCompatActivity(), DiskCacheLoaded, LifecycleOwner {
 
-    private var diskCache: DiskCache? = null
-    private var movieCache: MovieCache? = null
-    private var moviesAdapter: MoviesAdapter? = null
+    private lateinit var diskCache: DiskCache
+    private lateinit var movieCache: MovieCache
+    private lateinit var moviesAdapter: MoviesAdapter
 
     var movieViewModel: MovieViewModel? = null
 
