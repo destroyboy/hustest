@@ -3,19 +3,27 @@ package live.bolder.hustest;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Choreographer;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
 /*** hardcoded aspect ratio view for posters, to hopefully make recycler view smoother */
 
 public class PosterLayout extends RelativeLayout implements Choreographer.FrameCallback {
 
+    MoviesAdapter.MovieRow row;
+    int detailsIndex = 0;
     ImageView posterImage;
-    View info_area_1;
-    View info_area_2;
+    AppCompatTextView info_area_1;
+    AppCompatTextView info_area_2;
 
     long startAnimation_time;
     long endAnimation_time;
@@ -95,8 +103,10 @@ public class PosterLayout extends RelativeLayout implements Choreographer.FrameC
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    void resetView( State state ) {
-        switch( state ) {
+    void resetView( MoviesAdapter.MovieRow row ) {
+        this.row = row;
+        detailsIndex = 0; // show the first detail when in details view
+        switch( row.state ) {
             case Poster:
                 posterImage.setScaleX( 1.0f );
                 posterImage.setScaleY( 1.0f );
@@ -116,6 +126,52 @@ public class PosterLayout extends RelativeLayout implements Choreographer.FrameC
                 this.state = State.Details;
                 break;
         }
+    }
+
+    void doDetailsAnimation() {
+        if ( row == null || row.detailList == null || row.detailList.size()==0 )
+            return;
+
+        if ( --detailsIndex < 0 )
+            detailsIndex = row.detailList.size() - 1;
+
+        if ( info_area_1 == null || info_area_2 == null )
+            return;
+
+        MoviesAdapter.MovieRow.Detail detail = row.detailList.get( detailsIndex );
+
+        info_area_1.setText( detail.key );
+        info_area_2.setText( detail.value );
+    }
+
+    // periodically update the details text
+    Timer detailsAnimationTimer;
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if ( detailsAnimationTimer != null )
+            detailsAnimationTimer.cancel();
+
+        detailsAnimationTimer = new Timer();
+        detailsAnimationTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                ( ( MainActivity )getContext() ).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        doDetailsAnimation();
+                    }
+                });
+            }
+        },0,1000);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        detailsAnimationTimer.cancel();
     }
 
     // return the state that we shall transition to....

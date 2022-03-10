@@ -31,6 +31,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         MovieResults.Result info;
         MovieDetails details;
 
+        class Detail {
+            String key;
+            String value;
+            Detail( String key, String value ) {
+                this.key = key;
+                this.value = value;
+            }
+        }
+
+        ArrayList<Detail> detailList;
+
         /// whether we display poster or details
         PosterLayout.State state = PosterLayout.State.Poster;
 
@@ -44,6 +55,26 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         String getPosterPath() {
             return "https://image.tmdb.org/t/p/original"+ info.posterPath;
+        }
+
+        void generateDetailsList() {
+
+            detailList = new ArrayList<>();
+
+            if ( details == null )
+                return;
+            try {
+                JSONObject jsonObject = new JSONObject(new Gson().toJson( details ));
+                Iterator<String> keys = jsonObject.keys();
+
+                while(keys.hasNext()) {
+                    String key = keys.next();
+                    detailList.add( new Detail( key, jsonObject.get( key ).toString( ) ) );
+                }
+            }
+            catch ( JSONException e ) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -81,6 +112,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             row.info = info;
             row.details = details;
             row.state = state;
+            row.generateDetailsList();
             notifyItemChanged( index );
         }
     }
@@ -102,28 +134,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     @Override
     public void onBindViewHolder( ViewHolder holder, int position ) {
         holder.row = mData.get( position );
-        holder.posterLayout.resetView( holder.row.state );
-        ///holder.text1.setText( "fuck you, you bastard! what kind of crazy thing is this" );
+        holder.posterLayout.resetView( holder.row );
         Picasso.get().load( holder.row.getPosterPath()).resize( 400, 600 ).placeholder( R.drawable.imagemissing ).into( holder.posterView );
-        if ( holder.row.details != null ) {
-            try {
-                JSONObject jsonObject = new JSONObject(new Gson().toJson( holder.row.details ));
-                Iterator<String> keys = jsonObject.keys();
-
-                while(keys.hasNext()) {
-                    String key = keys.next();
-                    if ( jsonObject.get(key) instanceof JSONObject) {
-                        // do something with jsonObject here
-                    }
-                    Log.d( "TMBD", key);
-                }
-            }
-            catch ( JSONException e ) {
-                e.printStackTrace();
-            }
-
-        }
-
     }
 
     @Override

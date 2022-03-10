@@ -32,8 +32,7 @@
                 android:layout_height="match_parent"
                 android:textColor="@color/white"
                 android:fontFamily="monospace"
-                android:text="Field name:"
-                android:textSize="32dp"
+                android:textSize="24dp"
                 />
         </androidx.appcompat.widget.LinearLayoutCompat>
         <androidx.appcompat.widget.AppCompatTextView
@@ -48,8 +47,7 @@
             android:layout_weight="2"
             android:textColor="@color/white"
             android:fontFamily="monospace"
-            android:text="Value:"
-            android:textSize="32dp"
+            android:textSize="24dp"
             />
     </androidx.appcompat.widget.LinearLayoutCompat>
     <ImageView
