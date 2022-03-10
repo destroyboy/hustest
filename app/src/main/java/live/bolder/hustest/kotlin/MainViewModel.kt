@@ -1,44 +1,55 @@
 package live.bolder.hustest.kotlin
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
+import live.bolder.hustest.MovieDetails
+import live.bolder.hustest.MovieResults
+import live.bolder.hustest.PosterLayout
+import java.util.*
+import kotlin.collections.ArrayList
 
-class MainViewModel constructor(private val mainRepository: MainRepository) : ViewModel() {
+class MainViewModel constructor(private val mainRepository: MovieRepository) : ViewModel() {
 
-    val errorMessage = MutableLiveData<String>()
-    val movieList = MutableLiveData<List<Movie>>()
-    var job: Job? = null
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        onError("Exception handled: ${throwable.localizedMessage}")
+        Log.d("TMDB", "Exception handled: ${throwable.localizedMessage}")
     }
-    val loading = MutableLiveData<Boolean>()
 
-    fun getAllMovies() {
-
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            loading.postValue(true)
-            val response = mainRepository.getAllMovies()
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    movieList.postValue(response.body())
-                    loading.value = false
-                } else {
-                    onError("Error : ${response.message()} ")
-                }
-            }
+    class Movie(
+        var info: MovieResults.Result,
+        var details: MovieDetails?,
+        var index: Int,
+        var state: PosterLayout.State
+    ) {
+        override fun equals(o: Any?): Boolean {
+            if (this === o) return true
+            if (o !is Movie) return false
+            val movie = o
+            return index == movie.index && info == movie.info && details == movie.details
         }
 
+        override fun hashCode(): Int {
+            return Objects.hash(info, details, index)
+        }
     }
 
-    private fun onError(message: String) {
-        errorMessage.value = message
-        loading.value = false
-    }
+    var movies: MutableLiveData<ArrayList<Movie>> =  MutableLiveData<ArrayList<Movie>>()
 
-    override fun onCleared() {
-        super.onCleared()
-        job?.cancel()
-    }
+    fun refreshPopularMovies() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val moviesNew: ArrayList<Movie> = ArrayList()
+            val movieResults = mainRepository.getMovies().body()!!.results
+            for ( i in 0..movieResults.size ) {
+                val m = Movie( movieResults[ i ], null, i, PosterLayout.State.Poster )
+                moviesNew.add( m )
+                val details = mainRepository.getMovieDetails( m.info.id )
+                m.details = details.body()
+            }
 
+            withContext(Dispatchers.Main) {
+                movies.value = moviesNew
+            }
+        }
+    }
 }

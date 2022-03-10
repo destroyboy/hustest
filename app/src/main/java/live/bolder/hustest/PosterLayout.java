@@ -81,7 +81,7 @@ public class PosterLayout extends RelativeLayout implements Choreographer.FrameC
         }
     }
 
-    enum State {
+    public enum State {
         Poster,
         AnimatingToDetails,
         Details,

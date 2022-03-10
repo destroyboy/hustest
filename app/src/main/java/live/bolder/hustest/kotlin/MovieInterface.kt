@@ -12,7 +12,7 @@ import retrofit2.http.Query
 interface MovieInterface {
 
     @GET("/3/movie/{category}")
-    fun getMovies(
+    suspend fun getMovies(
         @Path("category") category: String,
         @Query("api_key") apiKey: String,
         @Query("language") language: String,
@@ -20,30 +20,9 @@ interface MovieInterface {
     ): Response<MovieResults>
 
     @GET("/3/movie/{movie_id}")
-    fun getMovieDetails(
+    suspend fun getMovieDetails(
         @Path("movie_id") movie_id: Int,
         @Query("api_key") apiKey: String,
         @Query("language") language: String
     ): Response<MovieDetails>
-
-
-    /// old cut and paste code under here...
-
-    @GET("movielist.json")
-    suspend fun getAllMovies() : Response<List<Movie>>
-
-    companion object {
-        var retrofitService: MovieInterface? = null
-        fun getInstance() : MovieInterface {
-            if (retrofitService == null) {
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://howtodoandroid.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                retrofitService = retrofit.create(MovieInterface::class.java)
-            }
-            return retrofitService!!
-        }
-
-    }
 }

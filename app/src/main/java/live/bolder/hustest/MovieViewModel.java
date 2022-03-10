@@ -10,6 +10,7 @@ import java.util.Objects;
 public class MovieViewModel extends ViewModel implements MovieCache.GetMovieUpdate {
 
     ArrayList<MutableLiveData<Movie>> movies;
+    MutableLiveData<ArrayList<MutableLiveData<Movie>>> m2;
 
     public MovieViewModel() {
         movies = new ArrayList<>();
