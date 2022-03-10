@@ -6,37 +6,61 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:clipToPadding="false">
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/info_area_1"
-        android:background="@drawable/rounded_corners_black"
-        android:elevation="16dp"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:textColor="@color/white"
-        android:fontFamily="monospace"
-        android:text="Field name:"
-        android:textSize="32dp"
-        />
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/info_area_2"
-        android:background="@drawable/rounded_corners_black"
-        android:elevation="16dp"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:textColor="@color/white"
-        android:fontFamily="monospace"
-        android:text="Value:"
-        android:textSize="32dp"
-        />
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <Space
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent">
+            </Space>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/info_area_1"
+                android:visibility="visible"
+                android:background="@drawable/rounded_corners_black"
+                android:elevation="16dp"
+                android:layout_marginLeft="4dp"
+                android:padding="4dp"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:textColor="@color/white"
+                android:fontFamily="monospace"
+                android:text="Field name:"
+                android:textSize="32dp"
+                />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/info_area_2"
+            android:visibility="visible"
+            android:background="@drawable/rounded_corners_black"
+            android:elevation="16dp"
+            android:layout_marginTop="4dp"
+            android:padding="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:textColor="@color/white"
+            android:fontFamily="monospace"
+            android:text="Value:"
+            android:textSize="32dp"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
     <ImageView
             android:id="@+id/poster_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:gravity="center_vertical"
             android:src="@drawable/imagemissing"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             android:background="@drawable/rounded_corners_white"
             android:elevation="12dp"/>
 </live.bolder.hustest.PosterLayout>

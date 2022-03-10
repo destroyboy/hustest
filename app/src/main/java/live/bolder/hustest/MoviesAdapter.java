@@ -1,6 +1,7 @@
 package live.bolder.hustest;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
@@ -56,6 +62,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             @Override protected int getVerticalSnapPreference() {
                 return LinearSmoothScroller.SNAP_TO_START;
             }
+
+            @Override
+            protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                final float MILLISECONDS_PER_INCH = 50;
+                return MILLISECONDS_PER_INCH / displayMetrics.densityDpi;
+            }
         };
     }
 
@@ -94,8 +106,22 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         ///holder.text1.setText( "fuck you, you bastard! what kind of crazy thing is this" );
         Picasso.get().load( holder.row.getPosterPath()).resize( 400, 600 ).placeholder( R.drawable.imagemissing ).into( holder.posterView );
         if ( holder.row.details != null ) {
-            String jObj = new Gson().toJson( holder.row.details );
-            Log.d( "TMDB", jObj );
+            try {
+                JSONObject jsonObject = new JSONObject(new Gson().toJson( holder.row.details ));
+                Iterator<String> keys = jsonObject.keys();
+
+                while(keys.hasNext()) {
+                    String key = keys.next();
+                    if ( jsonObject.get(key) instanceof JSONObject) {
+                        // do something with jsonObject here
+                    }
+                    Log.d( "TMBD", key);
+                }
+            }
+            catch ( JSONException e ) {
+                e.printStackTrace();
+            }
+
         }
 
     }
