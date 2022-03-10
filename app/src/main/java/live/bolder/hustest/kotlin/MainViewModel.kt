@@ -46,10 +46,10 @@ class MainViewModel constructor(private val mainRepository: MovieRepository) : V
                 val details = mainRepository.getMovieDetails( m.info.id )
                 m.details = details.body()
             }
-
-            withContext(Dispatchers.Main) {
-                movies.value = moviesNew
-            }
+            movies.postValue( moviesNew )
+            //withContext(Dispatchers.Main) {
+            //    movies.value = moviesNew
+            //}
         }
     }
 }
